@@ -55,7 +55,7 @@ def propagation(data):
         data = S
 
     #print(inner)
-    print(out)
+    #print(out)
 
 
 def retropropagation(classe):
@@ -65,16 +65,24 @@ def retropropagation(classe):
         y.append(-1)
     y[classe] = 1
     erreurCouche = []
-    erreur = []
-    #Calculer les erreurs de derniere couche
-    for j in range(nbClasse):
-        erreur.append(dfSigmoide(y[j]-out[nbClasse-1][j]))
-    erreurCouche.append(erreur)
+
+    #Calculer les erreurs
+    for n in range(len(nbNeurones)-1, -1, -1):
+        if n == len(nbNeurones)-1:
+            erreur = []
+            print('ko')
+            for j in range(nbNeurones[n]):
+                erreur.append(dfSigmoide(y[j]-out[n][j]))
+            erreurCouche.append(erreur)
+        else:
+            erreur = []
+            for j in range(len(poids[n])):
+                for i in range(nbNeurones[n]):
+                    for k in range(len(erreurCouche[n-1])):
+                        erreur_temp = poids[n][j][i]*erreurCouche[n-1][k]
+                    erreur.append(erreur_temp)
+            erreurCouche.append(erreur)
     print(erreurCouche)
-
-    #Calculer les erreurs des autres couches
-    
-
 
 
 def apprentissage(dataset):
