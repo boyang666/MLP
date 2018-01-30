@@ -59,13 +59,28 @@ def propagation(data):
 
 
 def retropropagation(classe):
-    return 0
     #=========== à faire ===========
+    y = []
+    for i in range(nbClasse):
+        y.append(-1)
+    y[classe] = 1
+    erreurCouche = []
+    erreur = []
+    #Calculer les erreurs de derniere couche
+    for j in range(nbClasse):
+        erreur.append(dfSigmoide(y[j]-out[nbClasse-1][j]))
+    erreurCouche.append(erreur)
+    print(erreurCouche)
+
+    #Calculer les erreurs des autres couches
+    
+
 
 
 def apprentissage(dataset):
     propagation(dataset[0])
     propagation(dataset[1])
+    retropropagation(1)
     return 0
     # =========== à faire ===========
 
