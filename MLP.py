@@ -5,10 +5,10 @@ import random
 
 nbExParClasse = 50
 nbExApprent = 25
-nbNeurones = [4, 6, 3]
+nbNeurones = [4, 10, 3]
 nbClasse = nbNeurones[len(nbNeurones) - 1]
 
-nbApprent = 1000
+nbApprent = 5000
 coeffApprent = 0.01
 coeffSigmoide = 2/3
 
@@ -37,7 +37,6 @@ def dfSigmoide(x):
 
 def propagation(data):
     global out, inner
-    # =========== à faire ===========
     inner = []
     out = []
     inner.append(data)
@@ -55,19 +54,49 @@ def propagation(data):
         data = S
 
     #print(inner)
-    print(out)
-
 
 def retropropagation(classe):
-    return 0
-    #=========== à faire ===========
+    y = []
+    for i in range(nbClasse):
+        y.append(-1)
+    y[classe] = 1
 
+    # calculer les erreurs
+    erreurCouche = []
+    for n in range(len(nbNeurones) - 1, -1, -1):
+        if n == len(nbNeurones) - 1:
+            erreur = []
+            for j in range(nbNeurones[n]):
+                erreur.append(dfSigmoide(inner[n][j]) * (out[n][j] - y[j]))
+            erreurCouche.append(erreur)
+        elif n != 0:
+            erreur = []
+            for j in range(nbNeurones[n]):
+                somme = 0
+                for k in range(nbNeurones[n+1]):
+                    somme = somme + poids[n][k][j] * erreurCouche[len(erreurCouche) - 1][k]
+                erreur.append(somme * dfSigmoide(inner[n][j]))
+            erreurCouche.append(erreur)
+    print(erreurCouche)
+
+    # mise a jour les poids
+    for n in range(len(nbNeurones) - 1):
+        for i in range(nbNeurones[n + 1]):
+            for j in range(nbNeurones[n]):
+                poids[n][i][j] = poids[n][i][j] + (-1) * coeffApprent * erreurCouche[len(erreurCouche) - 1 - n][i] * out[n][j]
 
 def apprentissage(dataset):
-    propagation(dataset[0])
-    propagation(dataset[1])
-    return 0
-    # =========== à faire ===========
+    list_indice = []
+    for i in range(nbClasse):
+        for j in range(nbExApprent):
+            list_indice.append(j + i * nbExParClasse)
+
+    for i in range(nbApprent):
+        j = random.choice(list_indice)
+        propagation(dataset[j])
+        retropropagation(j // nbExParClasse)
+
+
 
 
 def evaluation(dataset):
@@ -83,6 +112,8 @@ def evaluation(dataset):
                 ok += 1
             else:
                 ko += 1
+    print(ok)
+    print(ok+ko)
     print("Taux reco : {:.3f} %".format(ok / (ok + ko)))
 
 
